@@ -43,6 +43,7 @@ const feeItemSchema = z.object({
       { message: "Select a valid fee type" }
     ),
   description: z.string().trim().optional().default(""),
+  course_id: z.union([z.string(), z.literal("")]).optional().default(""),
   amount: z.coerce
     .number({ message: "Amount must be a number" })
     .min(0.01, "Amount must be greater than 0"),

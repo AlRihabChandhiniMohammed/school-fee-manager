@@ -6,6 +6,7 @@ import { InvoiceForm, type StudentOption } from "@/components/invoice/invoice-fo
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { round2 } from "@/lib/utils";
+import type { Course } from "@/lib/types";
 
 export const metadata = { title: "Edit Invoice" };
 
@@ -18,10 +19,10 @@ export default async function EditInvoicePage({
   const supabase = await createClient();
   const settings = await getSettings();
 
-  const [invoiceRes, studentsRes, balancesRes] = await Promise.all([
+  const [invoiceRes, studentsRes, balancesRes, coursesRes] = await Promise.all([
     supabase
       .from("invoices")
-      .select("*, items:invoice_items(fee_type, description, amount)")
+      .select("*, items:invoice_items(fee_type, description, amount, course_id)")
       .eq("id", id)
       .maybeSingle(),
     supabase
@@ -31,6 +32,7 @@ export default async function EditInvoicePage({
       )
       .order("student_name", { ascending: true }),
     supabase.from("invoices").select("student_id, balance").gt("balance", 0),
+    supabase.from("courses").select("id, name, code").order("name", { ascending: true }),
   ]);
 
   if (!invoiceRes.data) notFound();
@@ -52,9 +54,10 @@ export default async function EditInvoicePage({
   }));
 
   const invItems = (invoice.items ?? []).map(
-    (it: { fee_type: string; description: string | null; amount: number }) => ({
+    (it: { fee_type: string; description: string | null; course_id: string | null; amount: number }) => ({
       fee_type: it.fee_type,
       description: it.description ?? "",
+      course_id: it.course_id ?? "",
       amount: Number(it.amount),
     })
   );
@@ -72,6 +75,7 @@ export default async function EditInvoicePage({
       />
       <InvoiceForm
         students={students}
+        courses={(coursesRes.data ?? []) as Course[]}
         settings={settings}
         mode="edit"
         invoiceId={id}

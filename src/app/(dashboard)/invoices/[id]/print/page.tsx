@@ -19,7 +19,7 @@ export default async function InvoicePrintPage({
   const { data } = await supabase
     .from("invoices")
     .select(
-      "*, student:students(id, student_id, student_name, parent_name, parent_phone, parent_email, class, section, academic_year, address), items:invoice_items(fee_type, description, amount)"
+      "*, student:students(id, student_id, student_name, parent_name, parent_phone, parent_email, class, section, academic_year, address), items:invoice_items(fee_type, description, amount, course_id, courses(name))"
     )
     .eq("id", id)
     .maybeSingle();
@@ -69,13 +69,20 @@ export default async function InvoicePrintPage({
           parent_email: invoice.student?.parent_email ?? null,
           address: invoice.student?.address ?? null,
         }}
-        items={(invoice.items ?? []).map((it: { fee_type: string; description: string | null; amount: number }) => ({
+        items={(invoice.items ?? []).map((it: { fee_type: string; description: string | null; course?: unknown; amount: number }) => ({
           fee_type: it.fee_type,
           description: it.description,
+          course: courseNameOf(it.course),
           amount: Number(it.amount),
         }))}
         settings={settings}
       />
     </div>
   );
+}
+
+function courseNameOf(course: unknown): string | null {
+  if (!course) return null;
+  if (Array.isArray(course)) return course[0]?.name ?? null;
+  return (course as { name: string })?.name ?? null;
 }

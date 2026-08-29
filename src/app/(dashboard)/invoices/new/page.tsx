@@ -3,6 +3,7 @@ import { getSettings } from "@/lib/settings";
 import { InvoiceForm, type StudentOption } from "@/components/invoice/invoice-form";
 import { PageHeader } from "@/components/ui/page-header";
 import { round2 } from "@/lib/utils";
+import type { Course } from "@/lib/types";
 
 export const metadata = { title: "Generate Invoice" };
 
@@ -15,7 +16,7 @@ export default async function NewInvoicePage({
   const supabase = await createClient();
   const settings = await getSettings();
 
-  const [studentsRes, balancesRes] = await Promise.all([
+  const [studentsRes, balancesRes, coursesRes] = await Promise.all([
     supabase
       .from("students")
       .select(
@@ -23,6 +24,7 @@ export default async function NewInvoicePage({
       )
       .order("student_name", { ascending: true }),
     supabase.from("invoices").select("student_id, balance").gt("balance", 0),
+    supabase.from("courses").select("id, name, code").order("name", { ascending: true }),
   ]);
 
   const outstanding = new Map<string, number>();
@@ -44,10 +46,11 @@ export default async function NewInvoicePage({
     <div>
       <PageHeader
         title="Generate Invoice"
-        description="Select a student, add fee items, enter payment details, preview and save. A unique invoice number will be generated automatically."
+        description="Select a student, add fee items, choose a course per item, enter payment details, preview and save. A unique invoice number will be generated automatically."
       />
       <InvoiceForm
         students={students}
+        courses={(coursesRes.data ?? []) as Course[]}
         settings={settings}
         mode="create"
         preselectStudentId={sp.student}

@@ -50,6 +50,7 @@ export interface InvoiceItem {
   fee_type: string;
   description: string | null;
   amount: number;
+  course_id: string | null;
 }
 
 export interface Payment {

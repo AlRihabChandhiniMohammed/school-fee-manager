@@ -23,7 +23,7 @@ export default async function InvoiceDetailPage({
   const { data } = await supabase
     .from("invoices")
     .select(
-      "*, student:students(id, student_id, student_name, parent_name, parent_phone, parent_email, class, section, academic_year, address), items:invoice_items(id, fee_type, description, amount), payments(id, amount, payment_method, transaction_reference, payment_date, notes)"
+      "*, student:students(id, student_id, student_name, parent_name, parent_phone, parent_email, class, section, academic_year, address), items:invoice_items(id, fee_type, description, amount, course_id, courses(name)), payments(id, amount, payment_method, transaction_reference, payment_date, notes)"
     )
     .eq("id", id)
     .maybeSingle();
@@ -48,9 +48,10 @@ export default async function InvoiceDetailPage({
       parent_email: invoice.student?.parent_email ?? null,
       address: invoice.student?.address ?? null,
     },
-    items: (invoice.items ?? []).map((it: { fee_type: string; description: string | null; amount: number }) => ({
+    items: (invoice.items ?? []).map((it: { fee_type: string; description: string | null; course?: unknown; amount: number }) => ({
       fee_type: it.fee_type,
       description: it.description,
+      course: courseNameOf(it.course),
       amount: Number(it.amount),
     })),
     totals: {
@@ -161,4 +162,10 @@ function Row({ label, value }: { label: string; value: string }) {
       <dd className="font-medium text-slate-900">{value}</dd>
     </div>
   );
+}
+
+function courseNameOf(course: unknown): string | null {
+  if (!course) return null;
+  if (Array.isArray(course)) return course[0]?.name ?? null;
+  return (course as { name: string })?.name ?? null;
 }

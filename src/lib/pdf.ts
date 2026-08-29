@@ -20,7 +20,7 @@ export interface PdfInvoiceData {
     parent_email?: string | null;
     address?: string | null;
   };
-  items: { fee_type: string; description: string | null; amount: number }[];
+  items: { fee_type: string; description: string | null; course?: string | null; amount: number }[];
   totals: {
     subtotal: number;
     discount: number;
@@ -145,11 +145,18 @@ export async function downloadInvoicePdf(
   autoTable(doc, {
     startY: y,
     head: [["#", "Description", "Amount"]],
-    body: data.items.map((item, i) => [
-      String(i + 1),
-      item.description ? `${item.fee_type} — ${item.description}` : item.fee_type,
-      money(item.amount, settings.currency),
-    ]),
+    body: data.items.map((item, i) => {
+      const parts = [
+        item.fee_type,
+        item.course ? `(${item.course})` : null,
+        item.description ? `— ${item.description}` : null,
+      ].filter(Boolean);
+      return [
+        String(i + 1),
+        parts.join(" "),
+        money(item.amount, settings.currency),
+      ];
+    }),
     theme: "striped",
     styles: { fontSize: 9.5, cellPadding: 4, textColor: [51, 65, 85] },
     headStyles: { fillColor: [79, 70, 229], textColor: 255, fontStyle: "bold" },

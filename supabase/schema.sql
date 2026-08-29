@@ -69,7 +69,8 @@ create table if not exists public.invoice_items (
   invoice_id uuid not null references public.invoices(id) on delete cascade,
   fee_type text not null,
   description text,
-  amount numeric(12,2) not null default 0
+  amount numeric(12,2) not null default 0,
+  course_id uuid references public.courses(id) on delete set null
 );
 
 create index if not exists idx_invoice_items_invoice on public.invoice_items (invoice_id);

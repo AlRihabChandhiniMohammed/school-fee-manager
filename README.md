@@ -99,8 +99,11 @@ npm run start
   - `migrations/20260829200000_complete_school_fee_manager.sql` — canonical
     SQL to run in Supabase (core schema)
   - `migrations/20260829210000_add_courses.sql` — adds `courses` +
-    `student_courses` (student subject dropdown) — newest feature; run this
-    after the core schema
+    `student_courses` (student subject dropdown)
+  - `migrations/20260829220000_invoice_items_course.sql` — current migration
+    for the courses feature: idempotent, also adds an optional `course`
+    dropdown to every invoice fee line; safe to run alone (includes
+    20260829210000's changes)
   - `schema.sql` — identical to the core migration, one-file reference
 - `src/lib/`
   - `supabase/` — browser / server / middleware client factories

@@ -19,7 +19,7 @@ export async function GET(
   const { data, error } = await supabase
     .from("invoices")
     .select(
-      "*, student:students(id, student_id, student_name, parent_name, parent_phone, parent_email, class, section, academic_year), items:invoice_items(id, fee_type, description, amount), payments(id, amount, payment_method, payment_date, transaction_reference)"
+      "*, student:students(id, student_id, student_name, parent_name, parent_phone, parent_email, class, section, academic_year), items:invoice_items(id, fee_type, description, amount, course_id, courses(name)), payments(id, amount, payment_method, payment_date, transaction_reference)"
     )
     .eq("id", id)
     .maybeSingle();

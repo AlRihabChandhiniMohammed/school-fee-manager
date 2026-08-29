@@ -259,6 +259,7 @@ export async function createInvoiceAction(
       invoice_id: invoice.id,
       fee_type: item.fee_type,
       description: item.description || null,
+      course_id: item.course_id || null,
       amount: round2(item.amount),
     }));
 
@@ -340,6 +341,7 @@ export async function updateInvoiceAction(
       invoice_id: invoiceId,
       fee_type: item.fee_type,
       description: item.description || null,
+      course_id: item.course_id || null,
       amount: round2(item.amount),
     }));
     const { error: itemsError } = await supabase
