@@ -12,6 +12,7 @@ import {
   Settings,
   Search,
   GraduationCap,
+  BookOpen,
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -20,6 +21,7 @@ import { useEffect } from "react";
 const NAV_ITEMS = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/students", label: "Students", icon: Users },
+  { href: "/courses", label: "Courses", icon: BookOpen },
   { href: "/fees", label: "Fees", icon: Wallet },
   { href: "/invoices/new", label: "Generate Invoice", icon: FilePlus2 },
   { href: "/invoices", label: "Invoices", icon: FileText },

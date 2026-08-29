@@ -97,8 +97,11 @@ npm run start
 
 - `supabase/` — database schema, RPC, triggers, RLS
   - `migrations/20260829200000_complete_school_fee_manager.sql` — canonical
-    SQL to run in Supabase
-  - `schema.sql` — identical, one-file reference
+    SQL to run in Supabase (core schema)
+  - `migrations/20260829210000_add_courses.sql` — adds `courses` +
+    `student_courses` (student subject dropdown) — newest feature; run this
+    after the core schema
+  - `schema.sql` — identical to the core migration, one-file reference
 - `src/lib/`
   - `supabase/` — browser / server / middleware client factories
   - `actions.ts` — server actions (students, invoices, settings)

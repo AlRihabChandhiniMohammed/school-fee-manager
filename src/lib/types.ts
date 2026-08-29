@@ -15,6 +15,13 @@ export interface Student {
   updated_at: string;
 }
 
+export interface Course {
+  id: string;
+  name: string;
+  code: string | null;
+  created_at: string;
+}
+
 export type InvoiceStatus = "paid" | "partial" | "pending";
 
 export interface Invoice {

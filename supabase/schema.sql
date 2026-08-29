@@ -243,3 +243,33 @@ revoke all on public.invoice_counters from anon, authenticated;
 grant select on public.invoice_counters to postgres;
 
 grant execute on function public.generate_invoice_number(integer) to authenticated;
+
+-- ------------------------------------------------------------
+-- courses  (subjects a student can take)
+-- ------------------------------------------------------------
+create table if not exists public.courses (
+  id uuid primary key default gen_random_uuid(),
+  name text not null unique,
+  code text,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists idx_courses_name on public.courses (name);
+
+-- ------------------------------------------------------------
+-- student_courses  (many-to-many enrolment)
+-- ------------------------------------------------------------
+create table if not exists public.student_courses (
+  student_id uuid not null references public.students(id) on delete cascade,
+  course_id uuid not null references public.courses(id) on delete cascade,
+  primary key (student_id, course_id)
+);
+
+alter table public.courses enable row level security;
+alter table public.student_courses enable row level security;
+
+create policy "courses_all_authenticated" on public.courses
+  for all to authenticated using (true) with check (true);
+
+create policy "student_courses_all_authenticated" on public.student_courses
+  for all to authenticated using (true) with check (true);

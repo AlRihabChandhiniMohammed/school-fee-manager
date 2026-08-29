@@ -3,9 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import {
+  courseSchema,
   invoiceSchema,
   settingsSchema,
   studentSchema,
+  type CourseFormValues,
   type InvoiceFormValues,
   type SettingsFormValues,
   type StudentFormValues,
@@ -72,6 +74,15 @@ export async function createStudentAction(
       .single();
 
     if (error) throw error;
+
+    const courseIds = parsed.course_ids ?? [];
+    if (courseIds.length > 0) {
+      const { error: linkError } = await supabase.from("student_courses").insert(
+        courseIds.map((course_id) => ({ student_id: data.id, course_id }))
+      );
+      if (linkError) throw linkError;
+    }
+
     revalidatePath("/", "layout");
     return { success: true, data: { id: data.id } };
   } catch (error) {
@@ -116,6 +127,21 @@ export async function updateStudentAction(
       .eq("id", id);
 
     if (error) throw error;
+
+    const { error: delCoursesError } = await supabase
+      .from("student_courses")
+      .delete()
+      .eq("student_id", id);
+    if (delCoursesError) throw delCoursesError;
+
+    const courseIds = parsed.course_ids ?? [];
+    if (courseIds.length > 0) {
+      const { error: linkError } = await supabase.from("student_courses").insert(
+        courseIds.map((course_id) => ({ student_id: id, course_id }))
+      );
+      if (linkError) throw linkError;
+    }
+
     revalidatePath("/", "layout");
     return { success: true, data: undefined };
   } catch (error) {
@@ -127,6 +153,52 @@ export async function deleteStudentAction(id: string): Promise<ActionResult> {
   try {
     const supabase = await getSupabase();
     const { error } = await supabase.from("students").delete().eq("id", id);
+    if (error) throw error;
+    revalidatePath("/", "layout");
+    return { success: true, data: undefined };
+  } catch (error) {
+    return { success: false, error: toErrorMessage(error) };
+  }
+}
+
+// ---------------------------------------------------------------
+// Courses
+// ---------------------------------------------------------------
+
+export async function createCourseAction(
+  input: CourseFormValues
+): Promise<ActionResult<{ id: string }>> {
+  try {
+    const parsed = courseSchema.parse(input);
+    const supabase = await getSupabase();
+
+    const { data: existing } = await supabase
+      .from("courses")
+      .select("id")
+      .eq("name", parsed.name)
+      .maybeSingle();
+    if (existing) {
+      return { success: false, error: `Course "${parsed.name}" already exists.` };
+    }
+
+    const { data, error } = await supabase
+      .from("courses")
+      .insert({ name: parsed.name, code: parsed.code || null })
+      .select("id")
+      .single();
+
+    if (error) throw error;
+    revalidatePath("/", "layout");
+    return { success: true, data: { id: data.id } };
+  } catch (error) {
+    return { success: false, error: toErrorMessage(error) };
+  }
+}
+
+export async function deleteCourseAction(id: string): Promise<ActionResult> {
+  try {
+    const supabase = await getSupabase();
+    const { error } = await supabase.from("courses").delete().eq("id", id);
     if (error) throw error;
     revalidatePath("/", "layout");
     return { success: true, data: undefined };

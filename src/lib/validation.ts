@@ -20,9 +20,18 @@ export const studentSchema = z.object({
   academic_year: z.string().trim().min(1, "Academic year is required"),
   dob: z.union([z.string(), z.literal("")]).optional().default(""),
   gender: z.union([z.string(), z.literal("")]).optional().default(""),
+  course_ids: z.array(z.string()).optional().default([]),
 });
 
 export type StudentFormValues = z.infer<typeof studentSchema>;
+
+export const courseSchema = z.object({
+  name: z.string().trim().min(1, "Course name is required"),
+  code: z.string().trim().optional().default(""),
+});
+
+export type CourseFormValues = z.output<typeof courseSchema>;
+export type CourseFormInput = z.input<typeof courseSchema>;
 
 const feeItemSchema = z.object({
   fee_type: z

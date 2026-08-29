@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, BookOpen } from "lucide-react";
 import { studentSchema, type StudentFormInput, type StudentFormValues } from "@/lib/validation";
 import { createStudentAction, updateStudentAction } from "@/lib/actions";
 import { Button } from "@/components/ui/button";
@@ -12,22 +12,28 @@ import { Input, Select, Textarea } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
 import { FieldError } from "@/components/ui/field-error";
 import { useToast } from "@/components/ui/toast";
+import { CourseMultiSelect } from "@/components/courses/course-multi-select";
 import { CLASSES, ACADEMIC_YEARS, GENDERS } from "@/lib/constants";
+import type { Course } from "@/lib/types";
 
 export function StudentForm({
   mode,
   studentId,
   initialValues,
+  courses,
 }: {
   mode: "create" | "edit";
   studentId?: string;
   initialValues?: StudentFormValues;
+  courses: Course[];
 }) {
   const router = useRouter();
   const { toast } = useToast();
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<StudentFormInput>({
     resolver: zodResolver(studentSchema),
@@ -44,8 +50,15 @@ export function StudentForm({
       academic_year: "2026-2027",
       dob: "",
       gender: "",
+      course_ids: [],
     },
   });
+
+  const courseIds = watch("course_ids") ?? [];
+
+  function handleCoursesChange(ids: string[]) {
+    setValue("course_ids", ids, { shouldDirty: true, shouldValidate: true });
+  }
 
   async function onSubmit(values: StudentFormInput) {
     const parsed = studentSchema.parse(values) as StudentFormValues;
@@ -133,6 +146,20 @@ export function StudentForm({
               ))}
             </Select>
             <FieldError message={errors.gender?.message} />
+          </div>
+        </div>
+
+        <h3 className="mb-3 mt-6 flex items-center gap-1.5 text-sm font-semibold text-slate-900">
+          <BookOpen className="h-4 w-4 text-indigo-500" /> Courses Taken
+        </h3>
+        <div className="grid grid-cols-1 gap-4">
+          <div>
+            <CourseMultiSelect
+              courses={courses}
+              value={courseIds}
+              onChange={handleCoursesChange}
+            />
+            <FieldError message={errors.course_ids?.message?.toString()} />
           </div>
         </div>
       </section>

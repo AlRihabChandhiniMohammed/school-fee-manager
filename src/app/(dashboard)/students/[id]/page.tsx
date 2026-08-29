@@ -9,6 +9,7 @@ import {
   FilePlus2,
   Mail,
   MapPin,
+  BookOpen,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getSettings } from "@/lib/settings";
@@ -51,6 +52,13 @@ export default async function StudentDetailPage({
     .eq("student_id", id)
     .order("invoice_date", { ascending: false })
     .returns<StudentInvoiceRow[]>();
+
+  const { data: studentCourses } = await supabase
+    .from("student_courses")
+    .select("course_id, courses(name)")
+    .eq("student_id", id)
+    .order("course_id", { ascending: true })
+    .returns<{ course_id: string; courses: { name: string } | null }[]>();
 
   const totalFees = round2((invoices ?? []).reduce((s, inv) => s + Number(inv.total_amount), 0));
   const totalPaid = round2((invoices ?? []).reduce((s, inv) => s + Number(inv.amount_paid), 0));
@@ -101,6 +109,20 @@ export default async function StudentDetailPage({
             <InfoRow icon={<GraduationCap className="h-4 w-4" />} label="Academic Year">
               {student.academic_year}
             </InfoRow>
+            {studentCourses && studentCourses.length > 0 && (
+              <InfoRow icon={<BookOpen className="h-4 w-4" />} label="Courses Taken">
+                <div className="flex flex-wrap gap-1">
+                  {studentCourses.map((sc) => (
+                    <span
+                      key={sc.course_id}
+                      className="rounded-md bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700"
+                    >
+                      {sc.courses?.name}
+                    </span>
+                  ))}
+                </div>
+              </InfoRow>
+            )}
             {student.gender && (
               <InfoRow icon={<User className="h-4 w-4" />} label="Gender">
                 {student.gender}
