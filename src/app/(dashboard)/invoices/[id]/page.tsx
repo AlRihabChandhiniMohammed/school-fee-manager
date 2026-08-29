@@ -48,10 +48,10 @@ export default async function InvoiceDetailPage({
       parent_email: invoice.student?.parent_email ?? null,
       address: invoice.student?.address ?? null,
     },
-    items: (invoice.items ?? []).map((it: { fee_type: string; description: string | null; course?: unknown; amount: number }) => ({
+    items: (invoice.items ?? []).map((it: { fee_type: string; description: string | null; courses?: unknown; amount: number }) => ({
       fee_type: it.fee_type,
       description: it.description,
-      course: courseNameOf(it.course),
+      course: courseNameOf(it.courses),
       amount: Number(it.amount),
     })),
     totals: {
