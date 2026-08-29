@@ -52,9 +52,10 @@ npm install --legacy-peer-deps
 
 1. Create a project at https://supabase.com
 2. Open **SQL Editor** → New query, paste the contents of
-   [`supabase/schema.sql`](supabase/schema.sql) and **Run**.
-   This creates all tables, the invoice-number RPC, triggers and Row Level
-   Security policies. This only needs to be done once.
+   [`supabase/migrations/20260829200000_complete_school_fee_manager.sql`](supabase/migrations/20260829200000_complete_school_fee_manager.sql)
+   and **Run**. This creates all tables, the invoice-number RPC, triggers and
+   Row Level Security policies. This only needs to be done once.
+   (For a readable one-file reference, `supabase/schema.sql` is identical.)
 
 ### 3. Configure environment variables
 
@@ -94,7 +95,10 @@ npm run start
 
 ## Project structure
 
-- `supabase/schema.sql` — full database schema, RPC, triggers, RLS
+- `supabase/` — database schema, RPC, triggers, RLS
+  - `migrations/20260829200000_complete_school_fee_manager.sql` — canonical
+    SQL to run in Supabase
+  - `schema.sql` — identical, one-file reference
 - `src/lib/`
   - `supabase/` — browser / server / middleware client factories
   - `actions.ts` — server actions (students, invoices, settings)
