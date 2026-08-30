@@ -17,11 +17,10 @@ export interface PdfInvoiceData {
     parent_email?: string | null;
     address?: string | null;
   };
-  items: { fee_type: string; description: string | null; course?: string | null; amount: number }[];
+  items: { fee_type: string; description: string | null; amount: number }[];
   totals: {
     subtotal: number;
     discount: number;
-    previous_due: number;
     total: number;
     paid: number;
     balance: number;
@@ -140,7 +139,6 @@ export async function downloadInvoicePdf(
     body: data.items.map((item, i) => {
       const parts = [
         item.fee_type,
-        item.course ? `(${item.course})` : null,
         item.description ? `— ${item.description}` : null,
       ].filter(Boolean);
       return [
@@ -169,7 +167,6 @@ export async function downloadInvoicePdf(
   const summaryRows: [string, number, boolean][] = [
     ["Subtotal", data.totals.subtotal, false],
     ["Discount", -data.totals.discount, false],
-    ["Previous Due", data.totals.previous_due, false],
     ["Total Amount", data.totals.total, true],
     ["Amount Paid", -data.totals.paid, true],
   ];

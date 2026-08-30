@@ -46,7 +46,6 @@ export function InvoiceQuickActions({
         totals: {
           subtotal: Number(invoice.subtotal),
           discount: Number(invoice.discount),
-          previous_due: Number(invoice.previous_due),
           total: Number(invoice.total_amount),
           paid: Number(invoice.amount_paid),
           balance: Number(invoice.balance),

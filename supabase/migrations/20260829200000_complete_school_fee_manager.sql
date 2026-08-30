@@ -35,7 +35,6 @@ create table if not exists public.invoices (
   academic_year text not null default '',
   subtotal numeric(12,2) not null default 0,
   discount numeric(12,2) not null default 0,
-  previous_due numeric(12,2) not null default 0,
   total_amount numeric(12,2) not null default 0,
   amount_paid numeric(12,2) not null default 0,
   balance numeric(12,2) not null default 0,

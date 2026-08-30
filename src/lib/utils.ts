@@ -14,18 +14,16 @@ export function round2(value: number): number {
 export function computeInvoiceTotals(
   items: { amount: number }[],
   discount: number,
-  previousDue: number,
   amountPaid: number
 ) {
   const subtotal = round2(
     items.reduce((sum, item) => sum + parseNumber(item.amount, 0), 0)
   );
   const discountR = round2(Math.max(0, parseNumber(discount, 0)));
-  const previousDueR = round2(Math.max(0, parseNumber(previousDue, 0)));
-  const total = round2(subtotal - discountR + previousDueR);
+  const total = round2(subtotal - discountR);
   const paid = round2(Math.min(Math.max(0, parseNumber(amountPaid, 0)), total));
   const balance = round2(total - paid);
-  return { subtotal, discount: discountR, previousDue: previousDueR, total, paid, balance };
+  return { subtotal, discount: discountR, total, paid, balance };
 }
 
 export function statusLabel(status: string): string {

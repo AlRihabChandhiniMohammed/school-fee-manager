@@ -192,7 +192,6 @@ export async function createInvoiceAction(
     const totals = computeInvoiceTotals(
       parsed.items,
       parsed.discount,
-      parsed.previous_due,
       parsed.amount_paid
     );
 
@@ -212,7 +211,6 @@ export async function createInvoiceAction(
         academic_year: parsed.academic_year,
         subtotal: totals.subtotal,
         discount: totals.discount,
-        previous_due: totals.previousDue,
         total_amount: totals.total,
         amount_paid: totals.paid,
         balance: totals.balance,
@@ -230,7 +228,6 @@ export async function createInvoiceAction(
       invoice_id: invoice.id,
       fee_type: item.fee_type,
       description: item.description || null,
-      course_id: item.course_id || null,
       amount: round2(item.amount),
     }));
 
@@ -277,7 +274,6 @@ export async function updateInvoiceAction(
     const totals = computeInvoiceTotals(
       parsed.items,
       parsed.discount,
-      parsed.previous_due,
       parsed.amount_paid
     );
 
@@ -289,7 +285,6 @@ export async function updateInvoiceAction(
         academic_year: parsed.academic_year,
         subtotal: totals.subtotal,
         discount: totals.discount,
-        previous_due: totals.previousDue,
         total_amount: totals.total,
         amount_paid: totals.paid,
         balance: totals.balance,
@@ -312,7 +307,6 @@ export async function updateInvoiceAction(
       invoice_id: invoiceId,
       fee_type: item.fee_type,
       description: item.description || null,
-      course_id: item.course_id || null,
       amount: round2(item.amount),
     }));
     const { error: itemsError } = await supabase

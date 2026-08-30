@@ -28,7 +28,6 @@ export interface Invoice {
   academic_year: string;
   subtotal: number;
   discount: number;
-  previous_due: number;
   total_amount: number;
   amount_paid: number;
   balance: number;
@@ -46,7 +45,6 @@ export interface InvoiceItem {
   fee_type: string;
   description: string | null;
   amount: number;
-  course_id: string | null;
 }
 
 export interface Payment {
@@ -116,7 +114,6 @@ export interface NewInvoiceInput {
   academic_year: string;
   items: { fee_type: string; description: string; amount: number }[];
   discount: number;
-  previous_due: number;
   amount_paid: number;
   payment_method: string;
   transaction_reference: string;

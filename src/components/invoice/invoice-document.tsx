@@ -11,7 +11,6 @@ export interface InvoiceDocumentData {
     notes: string | null;
     subtotal: number;
     discount: number;
-    previous_due: number;
     total_amount: number;
     amount_paid: number;
     balance: number;
@@ -24,7 +23,7 @@ export interface InvoiceDocumentData {
     parent_email: string | null;
     address: string | null;
   };
-  items: { fee_type: string; description: string | null; course?: string | null; amount: number }[];
+  items: { fee_type: string; description: string | null; amount: number }[];
   settings: SchoolSettings;
   showPaymentLabel?: boolean;
 }
@@ -143,11 +142,6 @@ export function InvoiceDocument({
                 <td className="px-4 py-2.5 text-slate-500">{i + 1}</td>
                 <td className="px-4 py-2.5 text-slate-700">
                   {item.fee_type}
-                  {item.course && (
-                    <span className="mt-0.5 block text-xs font-medium text-indigo-600">
-                      {item.course}
-                    </span>
-                  )}
                   {item.description && (
                     <span className="block text-xs text-slate-400">{item.description}</span>
                   )}
@@ -185,7 +179,6 @@ export function InvoiceDocument({
         <div className="w-full sm:w-72 rounded-lg bg-slate-50 px-4 py-3">
           <SummaryRow label="Subtotal" value={cur(invoice.subtotal)} />
           <SummaryRow label="Discount" value={`− ${cur(invoice.discount)}`} />
-          <SummaryRow label="Previous Due" value={cur(invoice.previous_due)} />
           <div className="my-1 border-t border-slate-200" />
           <SummaryRow label="Total Amount" value={cur(invoice.total_amount)} strong />
           <SummaryRow label="Amount Paid" value={`− ${cur(invoice.amount_paid)}`} strong />

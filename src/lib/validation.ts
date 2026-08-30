@@ -35,7 +35,6 @@ const feeItemSchema = z.object({
       { message: "Select a valid fee type" }
     ),
   description: z.string().trim().optional().default(""),
-  course_id: z.union([z.string(), z.literal("")]).optional().default(""),
   amount: z.coerce
     .number({ message: "Amount must be a number" })
     .min(0.01, "Amount must be greater than 0"),
@@ -51,7 +50,6 @@ export const invoiceSchema = z
       .min(1, "Add at least one fee item")
       .max(100),
     discount: z.coerce.number().min(0, "Discount cannot be negative"),
-    previous_due: z.coerce.number().min(0, "Previous due cannot be negative"),
     amount_paid: z.coerce.number().min(0, "Amount paid cannot be negative"),
     payment_method: z.string().optional().default(""),
     transaction_reference: z.string().trim().optional().default(""),
@@ -59,7 +57,7 @@ export const invoiceSchema = z
   })
   .superRefine((data, ctx) => {
     const subtotal = data.items.reduce((s, it) => s + it.amount, 0);
-    const total = subtotal - data.discount + data.previous_due;
+    const total = subtotal - data.discount;
     if (data.discount > subtotal) {
       ctx.addIssue({
         code: "custom",

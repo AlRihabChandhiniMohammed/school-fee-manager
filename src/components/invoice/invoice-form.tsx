@@ -17,7 +17,7 @@ import {
 import { invoiceSchema, type InvoiceFormInput, type InvoiceFormValues } from "@/lib/validation";
 import { createInvoiceAction, updateInvoiceAction } from "@/lib/actions";
 import { FEE_TYPES, PAYMENT_METHODS, ACADEMIC_YEARS } from "@/lib/constants";
-import type { Course, SchoolSettings } from "@/lib/types";
+import type { SchoolSettings } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
@@ -41,7 +41,6 @@ export interface StudentOption {
 
 interface InvoiceFormProps {
   students: StudentOption[];
-  courses: Course[];
   settings: SchoolSettings;
   mode: "create" | "edit";
   invoiceId?: string;
@@ -55,12 +54,10 @@ interface InvoiceFormProps {
     transaction_reference?: string;
     notes?: string;
     discount: number | string;
-    previous_due: number | string;
     amount_paid: number | string;
     items: {
       fee_type: string;
       description: string;
-      course_id?: string;
       amount: number | string;
     }[];
     subtotal?: number;
@@ -77,7 +74,6 @@ function amountStr(v: unknown, fallback = ""): string {
 
 export function InvoiceForm({
   students,
-  courses,
   settings,
   mode,
   invoiceId,
@@ -87,12 +83,6 @@ export function InvoiceForm({
   const router = useRouter();
   const { toast } = useToast();
   const currency = settings.currency;
-
-  const courseName = useMemo(() => {
-    const map = new Map<string, string>();
-    for (const c of courses) map.set(c.id, c.name);
-    return (id: string) => map.get(id) ?? "";
-  }, [courses]);
 
   const preselected = preselectStudentId
     ? students.find((s) => s.id === preselectStudentId)
@@ -123,12 +113,10 @@ export function InvoiceForm({
           ? initialValues.items.map((it) => ({
               fee_type: it.fee_type,
               description: it.description ?? "",
-              course_id: it.course_id ?? "",
               amount: amountStr(it.amount),
             }))
-          : [{ fee_type: "Tuition Fee", description: "", course_id: "", amount: "" }],
+          : [{ fee_type: "Tuition Fee", description: "", amount: "" }],
       discount: amountStr(initialValues?.discount, "0"),
-      previous_due: amountStr(initialValues?.previous_due, preselected?.outstanding ? String(preselected.outstanding) : "0"),
       amount_paid: amountStr(initialValues?.amount_paid, "0"),
       payment_method: initialValues?.payment_method ?? "",
       transaction_reference: initialValues?.transaction_reference ?? "",
@@ -144,12 +132,11 @@ export function InvoiceForm({
       (values.items ?? []).reduce((s, it) => s + parseNumber(it.amount), 0)
     );
     const discount = round2(Math.max(0, parseNumber(values.discount)));
-    const previousDue = round2(Math.max(0, parseNumber(values.previous_due)));
-    const total = round2(subtotal - discount + previousDue);
+    const total = round2(subtotal - discount);
     const paid = round2(Math.min(Math.max(0, parseNumber(values.amount_paid)), Math.max(0, total)));
     const balance = round2(total - paid);
-    return { subtotal, discount, previousDue, total, paid, balance };
-  }, [values.items, values.discount, values.previous_due, values.amount_paid]);
+    return { subtotal, discount, total, paid, balance };
+  }, [values.items, values.discount, values.amount_paid]);
 
   const filteredStudents = useMemo(() => {
     const q = pickerQuery.trim().toLowerCase();
@@ -166,7 +153,6 @@ export function InvoiceForm({
     setSelected(s);
     setValue("student_id", s.id, { shouldValidate: true });
     setValue("academic_year", s.academic_year, { shouldValidate: true });
-    setValue("previous_due", String(s.outstanding));
     clearErrors("student_id");
     setPickerOpen(false);
     setPickerQuery("");
@@ -303,8 +289,8 @@ export function InvoiceForm({
               </div>
               {selected.outstanding > 0 && (
                 <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs font-medium text-amber-700 sm:col-span-2">
-                  Previous outstanding balance of {formatCurrency(selected.outstanding, currency)} has
-                  been pre-filled as Previous Due. Adjust if needed.
+                  Student has an outstanding balance of {formatCurrency(selected.outstanding, currency)}
+                  on previous invoices.
                 </p>
               )}
             </div>
@@ -315,7 +301,7 @@ export function InvoiceForm({
         <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-base font-semibold text-slate-900">2. Fee Details</h2>
-            <Button type="button" variant="outline" size="sm" onClick={() => append({ fee_type: "Tuition Fee", description: "", course_id: "", amount: "" })}>
+            <Button type="button" variant="outline" size="sm" onClick={() => append({ fee_type: "Tuition Fee", description: "", amount: "" })}>
               <Plus className="h-3.5 w-3.5" /> Add Item
             </Button>
           </div>
@@ -325,7 +311,7 @@ export function InvoiceForm({
               key={field.id}
               className="mb-3 rounded-lg border border-slate-200 p-4"
             >
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_150px_auto]">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_150px_auto]">
                 <div>
                   <Label htmlFor={`items.${index}.fee_type`}>Fee Type</Label>
                   <Select id={`items.${index}.fee_type`} {...register(`items.${index}.fee_type`)}>
@@ -336,17 +322,6 @@ export function InvoiceForm({
                     ))}
                   </Select>
                   <FieldError message={errors.items?.[index]?.fee_type?.message} />
-                </div>
-                <div>
-                  <Label htmlFor={`items.${index}.course_id`}>Course</Label>
-                  <Select id={`items.${index}.course_id`} {...register(`items.${index}.course_id`)}>
-                    <option value="">— No course —</option>
-                    {courses.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </Select>
                 </div>
                 <div>
                   <Label htmlFor={`items.${index}.description`}>Description</Label>
@@ -385,7 +360,7 @@ export function InvoiceForm({
             <FieldError message={errors.items.root.message} />
           )}
 
-          <div className="mt-1 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-1 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <div>
               <Label htmlFor="invoice_date">Invoice Date</Label>
               <Input id="invoice_date" type="date" {...register("invoice_date")} />
@@ -405,11 +380,6 @@ export function InvoiceForm({
               <Label htmlFor="discount">Discount</Label>
               <Input id="discount" type="number" step="0.01" min="0" placeholder="0.00" {...register("discount")} />
               <FieldError message={errors.discount?.message} />
-            </div>
-            <div>
-              <Label htmlFor="previous_due">Previous Due</Label>
-              <Input id="previous_due" type="number" step="0.01" min="0" placeholder="0.00" {...register("previous_due")} />
-              <FieldError message={errors.previous_due?.message} />
             </div>
           </div>
         </section>
@@ -463,10 +433,6 @@ export function InvoiceForm({
             <div className="flex justify-between text-slate-600">
               <dt>Discount</dt>
               <dd>− {formatCurrency(calc.discount, currency)}</dd>
-            </div>
-            <div className="flex justify-between text-slate-600">
-              <dt>Previous Due</dt>
-              <dd>{formatCurrency(calc.previousDue, currency)}</dd>
             </div>
             <div className="flex justify-between border-t border-slate-200 pt-2.5 font-semibold text-slate-900">
               <dt>Total Amount</dt>
@@ -537,7 +503,6 @@ export function InvoiceForm({
                 notes: values.notes || null,
                 subtotal: calc.subtotal,
                 discount: calc.discount,
-                previous_due: calc.previousDue,
                 total_amount: calc.total,
                 amount_paid: calc.paid,
                 balance: calc.balance,
@@ -555,7 +520,6 @@ export function InvoiceForm({
                 .map((it) => ({
                   fee_type: it.fee_type,
                   description: it.description ?? null,
-                  course: courseName(it.course_id ?? "") || null,
                   amount: parseNumber(it.amount),
                 }))}
               settings={settings}

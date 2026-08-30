@@ -39,7 +39,6 @@ create table if not exists public.invoices (
   academic_year text not null default '',
   subtotal numeric(12,2) not null default 0,
   discount numeric(12,2) not null default 0,
-  previous_due numeric(12,2) not null default 0,
   total_amount numeric(12,2) not null default 0,
   amount_paid numeric(12,2) not null default 0,
   balance numeric(12,2) not null default 0,
@@ -64,8 +63,7 @@ create table if not exists public.invoice_items (
   invoice_id uuid not null references public.invoices(id) on delete cascade,
   fee_type text not null,
   description text,
-  amount numeric(12,2) not null default 0,
-  course_id uuid references public.courses(id) on delete set null
+  amount numeric(12,2) not null default 0
 );
 
 create index if not exists idx_invoice_items_invoice on public.invoice_items (invoice_id);
