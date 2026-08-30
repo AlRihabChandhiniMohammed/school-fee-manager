@@ -32,6 +32,46 @@ function money(amount: number, currency: string): string {
   return `${currencyPrefix(currency)} ${formatNumber(amount)}`;
 }
 
+// jsPDF's built-in fonts only support the WinAnsi (Latin-1) character set.
+// Any Unicode outside that set renders as mojibake, so map common symbols to
+// ASCII equivalents and drop everything else (emoji etc.).
+const PDF_TEXT_SUBSTITUTIONS: ReadonlyArray<[RegExp, string]> = [
+  [/[\u201C\u201D]/g, '"'],
+  [/[\u2018\u2019\u02BC]/g, "'"],
+  [/[\u2013\u2014\u2212\u2010\u2011]/g, "-"],
+  [/[\u2022\u00B7\u2043\u2023\u25CF\u25AA\u25AB\u25A1]/g, "-"],
+  [/[\u2026]/g, "..."],
+  [/[\u00A0]/g, " "],
+  [/[\u00A9]/g, "(c)"],
+  [/[\u00AE]/g, "(R)"],
+  [/[\u2122]/g, "(TM)"],
+  [/[\u20B9]/g, "Rs."],
+  [/[\u2713\u2714\u2611]/g, "[X]"],
+  [/[\u2715\u2717\u2718\u2612]/g, "[ ]"],
+  [/[\u2192\u27A1]/g, "->"],
+  [/[\u2190]/g, "<-"],
+  [/[\u2191]/g, "^"],
+  [/[\u2193]/g, "v"],
+  [/[\u2194]/g, "<->"],
+  [/[\u00D7]/g, "x"],
+  [/[\u00F7]/g, "/"],
+  [/[\u00B1]/g, "+/-"],
+  [/[\u2605\u2606]/g, "*"],
+];
+
+function pdfText(value: string | null | undefined): string {
+  let text = (value ?? "").toString().normalize("NFKC");
+  for (const [re, replacement] of PDF_TEXT_SUBSTITUTIONS) {
+    text = text.replace(re, replacement);
+  }
+  let result = "";
+  for (const ch of text) {
+    const code = ch.codePointAt(0)!;
+    result += code <= 0x00ff ? ch : " ";
+  }
+  return result;
+}
+
 export async function downloadInvoicePdf(
   data: PdfInvoiceData,
   settings: SchoolSettings
@@ -58,15 +98,15 @@ export async function downloadInvoicePdf(
   doc.setFont("helvetica", "bold");
   doc.setFontSize(17);
   doc.setTextColor(30, 41, 59);
-  doc.text(settings.school_name || "My School", headerX, y + 6);
+  doc.text(pdfText(settings.school_name || "Edu Alt Tech"), headerX, y + 6);
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.setTextColor(100, 116, 139);
   const infoLines = [
-    settings.school_address,
-    [settings.school_phone, settings.school_email].filter(Boolean).join("  •  ") || null,
-    settings.school_website || null,
+    pdfText(settings.school_address),
+    pdfText([settings.school_phone, settings.school_email].filter(Boolean).join("  •  ")) || null,
+    pdfText(settings.school_website) || null,
   ].filter(Boolean);
   let lineY = y + 10.5;
   for (const line of infoLines) {
@@ -84,9 +124,9 @@ export async function downloadInvoicePdf(
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10);
   doc.setTextColor(51, 65, 85);
-  doc.text(`Invoice No: ${data.invoice_number}`, pageWidth - margin, y + 12, { align: "right" });
-  doc.text(`Date: ${formatDate(data.invoice_date)}`, pageWidth - margin, y + 17, { align: "right" });
-  doc.text(`Academic Year: ${data.academic_year}`, pageWidth - margin, y + 22, { align: "right" });
+  doc.text(`Invoice No: ${pdfText(data.invoice_number)}`, pageWidth - margin, y + 12, { align: "right" });
+  doc.text(`Date: ${pdfText(formatDate(data.invoice_date))}`, pageWidth - margin, y + 17, { align: "right" });
+  doc.text(`Academic Year: ${pdfText(data.academic_year)}`, pageWidth - margin, y + 22, { align: "right" });
 
   const statusBoxW = 34;
   const statusColor =
@@ -96,7 +136,7 @@ export async function downloadInvoicePdf(
   doc.setFillColor(255, 255, 255);
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(8.5);
-  doc.text(statusLabel(data.status).toUpperCase(), pageWidth - margin - statusBoxW / 2, y + 30.6, {
+  doc.text(pdfText(statusLabel(data.status).toUpperCase()), pageWidth - margin - statusBoxW / 2, y + 30.6, {
     align: "center",
   });
   doc.setTextColor(30, 41, 59);
@@ -119,17 +159,17 @@ export async function downloadInvoicePdf(
   doc.setFontSize(10.5);
   doc.setTextColor(30, 41, 59);
   doc.setFont("helvetica", "bold");
-  doc.text(data.student.parent_name, margin, y + 6);
+  doc.text(pdfText(data.student.parent_name), margin, y + 6);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(71, 85, 105);
-  doc.text(`Mobile: ${data.student.parent_phone}`, margin, y + 11);
+  doc.text(`Mobile: ${pdfText(data.student.parent_phone)}`, margin, y + 11);
   if (data.student.parent_email) {
-    doc.text(data.student.parent_email, margin, y + 16);
+    doc.text(pdfText(data.student.parent_email), margin, y + 16);
   }
 
   doc.setFont("helvetica", "bold");
   doc.setTextColor(30, 41, 59);
-  doc.text(data.student.student_name, pageWidth / 2, y + 6);
+  doc.text(pdfText(data.student.student_name), pageWidth / 2, y + 6);
 
   y += 24;
 
@@ -141,7 +181,7 @@ export async function downloadInvoicePdf(
       const parts = [
         item.fee_type,
         item.description ? `— ${item.description}` : null,
-      ].filter(Boolean);
+      ].filter(Boolean).map((part) => pdfText(String(part)));
       return [
         String(i + 1),
         parts.join(" "),
@@ -178,7 +218,7 @@ export async function downloadInvoicePdf(
     doc.text(label, sumX, y);
     doc.setFont("helvetica", bold ? "bold" : "normal");
     doc.text(
-      `${value < 0 ? "− " : ""}${money(Math.abs(value), settings.currency)}`,
+      `${value < 0 ? "- " : ""}${money(Math.abs(value), settings.currency)}`,
       sumX + summaryW,
       y,
       { align: "right" }
@@ -204,7 +244,7 @@ export async function downloadInvoicePdf(
     doc.setFontSize(8.5);
     doc.setTextColor(100, 116, 139);
     doc.setFont("helvetica", "normal");
-    doc.text(`Notes: ${data.notes}`, margin, y);
+    doc.text(`Notes: ${pdfText(data.notes)}`, margin, y);
     y += 8;
   }
 
@@ -218,7 +258,7 @@ export async function downloadInvoicePdf(
   doc.setFont("helvetica", "bold");
   doc.setTextColor(30, 41, 59);
   doc.text(
-    settings.invoice_footer || "Thank you for your payment.",
+    pdfText(settings.invoice_footer || "Thank you for your payment."),
     margin,
     footerY + 8
   );
@@ -227,7 +267,7 @@ export async function downloadInvoicePdf(
   doc.setFont("helvetica", "normal");
   doc.setTextColor(100, 116, 139);
   doc.text(
-    `${settings.school_name}  |  ${settings.school_phone || ""}`.trim(),
+    pdfText(`${settings.school_name}  |  ${settings.school_phone || ""}`.trim()),
     margin,
     footerY + 14
   );

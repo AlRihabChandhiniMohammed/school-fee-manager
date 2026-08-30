@@ -75,7 +75,7 @@ export function InvoiceDocument({
           </div>
           <div>
             <h1 className="text-lg font-bold text-slate-900 sm:text-xl">
-              {settings.school_name || "My School"}
+              {settings.school_name || "Edu Alt Tech"}
             </h1>
             <p className="mt-1 text-xs leading-5 text-slate-500">
               {settings.school_address}

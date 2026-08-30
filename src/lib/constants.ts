@@ -36,7 +36,7 @@ export const CURRENCIES = [
 ] as const;
 
 export const DEFAULT_SETTINGS: Record<string, string> = {
-  school_name: "My School",
+  school_name: "Edu Alt Tech",
   school_address: "",
   school_phone: "",
   school_email: "",
