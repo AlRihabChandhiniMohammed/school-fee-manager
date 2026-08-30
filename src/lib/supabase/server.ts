@@ -1,12 +1,22 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { getSupabaseEnv } from "@/lib/supabase/config";
 
 export async function createClient() {
+  const { url, anonKey, configured } = getSupabaseEnv();
+
+  if (!configured) {
+    // Supabase not configured: send the user to the login page which
+    // explains how to set it up, instead of crashing.
+    redirect("/login");
+  }
+
   const cookieStore = await cookies();
 
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    url,
+    anonKey,
     {
       cookies: {
         getAll() {
@@ -28,13 +38,16 @@ export async function createClient() {
 }
 
 export async function getUserOrRedirect() {
+  if (!getSupabaseEnv().configured) {
+    redirect("/login");
+  }
+
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (!user) {
-    const { redirect } = await import("next/navigation");
     redirect("/login");
   }
 

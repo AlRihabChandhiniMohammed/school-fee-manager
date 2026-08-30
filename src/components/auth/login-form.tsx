@@ -2,11 +2,12 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { GraduationCap, Mail, Lock, Loader2 } from "lucide-react";
+import Image from "next/image";
+import { Mail, Lock, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
-export function LoginForm() {
+export function LoginForm({ configured = true }: { configured?: boolean }) {
   const router = useRouter();
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
@@ -21,9 +22,8 @@ export function LoginForm() {
     setNotice(null);
     setLoading(true);
 
-    const supabase = createClient();
-
     try {
+      const supabase = createClient();
       if (mode === "login") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
@@ -49,8 +49,15 @@ export function LoginForm() {
     <div className="w-full max-w-md">
       <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
         <div className="mb-6 flex flex-col items-center text-center">
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-md">
-            <GraduationCap className="h-7 w-7" />
+          <div className="mb-4 flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-slate-100">
+            <Image
+              src="/logo.png"
+              alt="School Fee Invoice Manager"
+              width={1536}
+              height={1024}
+              priority
+              className="h-14 w-14 object-contain"
+            />
           </div>
           <h1 className="text-xl font-bold text-slate-900">School Fee Invoice Manager</h1>
           <p className="mt-1 text-sm text-slate-500">
@@ -63,6 +70,7 @@ export function LoginForm() {
             <button
               key={m}
               type="button"
+              disabled={!configured}
               onClick={() => {
                 setMode(m);
                 setError(null);
@@ -70,13 +78,26 @@ export function LoginForm() {
               }}
               className={cn(
                 "rounded-md py-2 transition",
-                mode === m ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                mode === m ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700",
+                !configured && "cursor-not-allowed opacity-70"
               )}
             >
               {m === "login" ? "Sign In" : "Create Account"}
             </button>
           ))}
         </div>
+
+        {!configured && (
+          <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-800">
+            <p className="font-semibold">Supabase is not configured yet.</p>
+            <p className="mt-1">
+              Set <code className="font-mono">NEXT_PUBLIC_SUPABASE_URL</code> and{" "}
+              <code className="font-mono">NEXT_PUBLIC_SUPABASE_ANON_KEY</code> in your
+              Vercel project settings (or <code className="font-mono">.env.local</code>{" "}
+              locally), then redeploy.
+            </p>
+          </div>
+        )}
 
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
@@ -121,7 +142,7 @@ export function LoginForm() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !configured}
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:opacity-60"
           >
             {loading && <Loader2 className="h-4 w-4 animate-spin" />}

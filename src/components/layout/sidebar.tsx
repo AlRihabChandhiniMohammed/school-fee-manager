@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
@@ -13,7 +14,6 @@ import {
   BarChart3,
   Settings,
   Search,
-  GraduationCap,
   BookOpen,
   X,
 } from "lucide-react";
@@ -68,8 +68,15 @@ export function Logo({ onNavigate }: { onNavigate?: () => void }) {
       onClick={onNavigate}
       className="flex items-center gap-2.5 px-5 py-5"
     >
-      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-white shadow-sm">
-        <GraduationCap className="h-5 w-5" />
+      <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg bg-slate-100">
+        <Image
+          src="/logo.png"
+          alt="School Fees"
+          width={1536}
+          height={1024}
+          priority
+          className="h-9 w-9 object-contain"
+        />
       </div>
       <div className="leading-tight">
         <p className="text-sm font-bold text-slate-900">School Fees</p>
