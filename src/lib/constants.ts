@@ -46,7 +46,6 @@ export const DEFAULT_SETTINGS: Record<string, string> = {
   invoice_start: "1",
   currency: "INR",
   invoice_footer: "Thank you for your payment.",
-  signature_name: "Principal",
 };
 
 export const ACADEMIC_YEARS = [

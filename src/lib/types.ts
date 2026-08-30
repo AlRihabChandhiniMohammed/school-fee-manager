@@ -91,7 +91,6 @@ export interface SchoolSettings {
   invoice_start: number;
   currency: string;
   invoice_footer: string;
-  signature_name: string;
 }
 
 export interface SchoolSettingsInput {
@@ -105,7 +104,6 @@ export interface SchoolSettingsInput {
   invoice_start: number | null;
   currency: string;
   invoice_footer: string;
-  signature_name: string;
 }
 
 export interface NewInvoiceInput {

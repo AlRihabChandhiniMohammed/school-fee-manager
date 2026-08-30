@@ -109,7 +109,6 @@ export const settingsSchema = z.object({
   invoice_start: z.coerce.number().int().min(1, "Must be at least 1").optional(),
   currency: z.string().trim().min(1, "Currency is required"),
   invoice_footer: z.string().trim().optional().default(""),
-  signature_name: z.string().trim().optional().default(""),
 });
 
 export type SettingsFormValues = z.output<typeof settingsSchema>;

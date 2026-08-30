@@ -36,7 +36,6 @@ export function SettingsForm({ initial }: { initial: SchoolSettings }) {
       invoice_start: initial.invoice_start ?? 1,
       currency: initial.currency,
       invoice_footer: initial.invoice_footer,
-      signature_name: initial.signature_name,
     },
   });
 
@@ -133,11 +132,6 @@ export function SettingsForm({ initial }: { initial: SchoolSettings }) {
             <FieldError message={errors.currency?.message} />
           </div>
           <div>
-            <Label htmlFor="signature_name">Authorized Signature Name</Label>
-            <Input id="signature_name" placeholder="e.g. Principal" {...register("signature_name")} />
-            <FieldError message={errors.signature_name?.message} />
-          </div>
-          <div className="sm:col-span-2">
             <Label htmlFor="invoice_footer">Invoice Footer Message</Label>
             <Input id="invoice_footer" placeholder="Thank you for your payment." {...register("invoice_footer")} />
             <FieldError message={errors.invoice_footer?.message} />

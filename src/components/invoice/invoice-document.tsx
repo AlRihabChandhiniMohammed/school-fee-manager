@@ -58,22 +58,21 @@ export function InvoiceDocument({
 }: InvoiceDocumentData) {
   const symbol = settings.currency === "INR" ? "₹" : settings.currency;
   const cur = (n: number) => formatCurrency(n, settings.currency);
+  const logo = settings.school_logo || "/logo.png";
 
   return (
     <div className="mx-auto w-full max-w-[800px] rounded-xl border border-slate-200 bg-white shadow-sm">
       {/* Pumping header */}
       <div className="flex flex-col gap-6 border-b-4 border-indigo-600 px-8 py-7 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-center gap-4">
-          {settings.school_logo && (
-            <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg ring-1 ring-slate-200">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={settings.school_logo}
-                alt={`${settings.school_name} logo`}
-                className="h-full w-full object-contain"
-              />
-            </div>
-          )}
+          <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg ring-1 ring-slate-200">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={logo}
+              alt={`${settings.school_name} logo`}
+              className="h-full w-full object-contain"
+            />
+          </div>
           <div>
             <h1 className="text-lg font-bold text-slate-900 sm:text-xl">
               {settings.school_name || "My School"}
@@ -200,20 +199,6 @@ export function InvoiceDocument({
             <p className="mt-1 text-xs text-slate-400">
               {settings.school_name} {settings.school_phone && `| ${settings.school_phone}`}
             </p>
-          </div>
-          <div className="text-right">
-            <p className="text-xs text-slate-400">Authorized Signature</p>
-            <div className="mt-1 flex items-end justify-end gap-4">
-              <div>
-                <div className="mx-auto mb-1 h-8 w-24 rounded border border-dashed border-slate-300" />
-                <p className="border-t border-slate-300 pt-1 text-xs font-semibold text-slate-700">
-                  {settings.signature_name || "Principal"}
-                </p>
-              </div>
-              <div className="flex h-16 w-16 items-end justify-center rounded border border-dashed border-slate-300 pb-2">
-                <span className="text-[10px] uppercase tracking-widest text-slate-300">Stamp</span>
-              </div>
-            </div>
           </div>
         </div>
       </div>

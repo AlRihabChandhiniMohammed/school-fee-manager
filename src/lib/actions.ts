@@ -374,7 +374,6 @@ export async function saveSettingsAction(
       { key: "invoice_start", value: String(parsed.invoice_start ?? 1) },
       { key: "currency", value: parsed.currency },
       { key: "invoice_footer", value: parsed.invoice_footer },
-      { key: "signature_name", value: parsed.signature_name },
     ];
 
     const { error } = await supabase.from("settings").upsert(entries, {

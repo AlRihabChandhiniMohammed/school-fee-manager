@@ -42,9 +42,10 @@ export async function downloadInvoicePdf(
   let y = margin;
 
   // ---------- Header ----------
-  if (settings.school_logo) {
+  const logo = settings.school_logo || "/logo.png";
+  if (logo) {
     try {
-      const img = await loadImage(settings.school_logo);
+      const img = await loadImage(logo);
       if (img) {
         doc.addImage(img, "PNG" as never, margin, y, 24, 24);
       }
@@ -53,7 +54,7 @@ export async function downloadInvoicePdf(
     }
   }
 
-  const headerX = settings.school_logo ? margin + 30 : margin;
+  const headerX = logo ? margin + 30 : margin;
   doc.setFont("helvetica", "bold");
   doc.setFontSize(17);
   doc.setTextColor(30, 41, 59);
@@ -230,24 +231,6 @@ export async function downloadInvoicePdf(
     margin,
     footerY + 14
   );
-
-  // Authorized signature (right side)
-  const sigX = pageWidth - margin;
-  doc.text("Authorized Signature", sigX, footerY + 40, { align: "right" });
-  doc.setDrawColor(71, 85, 105);
-  doc.line(sigX - 60, footerY + 36, sigX, footerY + 36);
-  doc.setTextColor(30, 41, 59);
-  doc.setFont("helvetica", "bold");
-  doc.text(settings.signature_name || "Principal", sigX, footerY + 46, { align: "right" });
-
-  // Stamp placeholder
-  doc.setDrawColor(160, 160, 160);
-  doc.setLineWidth(0.4);
-  doc.roundedRect(sigX - 46, footerY + 22, 30, 30, 2, 2, "S");
-  doc.setFontSize(7.5);
-  doc.setTextColor(160, 160, 160);
-  doc.text("SCHOOL", sigX - 31, footerY + 36, { align: "center" });
-  doc.text("STAMP", sigX - 31, footerY + 40.5, { align: "center" });
 
   doc.save(invoicePdfFilename(data.invoice_number, data.student.student_name));
 }
