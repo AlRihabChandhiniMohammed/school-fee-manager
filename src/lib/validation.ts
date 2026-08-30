@@ -3,12 +3,8 @@ import { FEE_TYPES } from "@/lib/constants";
 
 export const studentSchema = z.object({
   student_name: z.string().trim().min(1, "Student name is required"),
-  parent_name: z.string().trim().min(1, "Parent/guardian name is required"),
-  parent_phone: z
-    .string()
-    .trim()
-    .min(7, "Enter a valid phone number")
-    .regex(/^[+\d\s-]{7,20}$/, "Enter a valid phone number"),
+  parent_name: z.string().trim().optional().default(""),
+  parent_phone: z.string().trim().optional().default(""),
   parent_email: z
     .union([z.string().trim().email("Enter a valid email"), z.literal("")])
     .optional()

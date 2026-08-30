@@ -125,12 +125,16 @@ export default async function StudentDetailPage({
             )}
 
             <div className="my-2 border-t border-slate-100" />
-            <InfoRow icon={<User className="h-4 w-4" />} label="Parent / Guardian">
-              <span className="font-medium text-slate-900">{student.parent_name}</span>
-            </InfoRow>
-            <InfoRow icon={<Phone className="h-4 w-4" />} label="Phone">
-              {student.parent_phone}
-            </InfoRow>
+            {student.parent_name && (
+              <InfoRow icon={<User className="h-4 w-4" />} label="Parent / Guardian">
+                <span className="font-medium text-slate-900">{student.parent_name}</span>
+              </InfoRow>
+            )}
+            {student.parent_phone && (
+              <InfoRow icon={<Phone className="h-4 w-4" />} label="Phone">
+                {student.parent_phone}
+              </InfoRow>
+            )}
             {student.parent_email && (
               <InfoRow icon={<Mail className="h-4 w-4" />} label="Email">
                 {student.parent_email}

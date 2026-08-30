@@ -131,15 +131,16 @@ export function StudentForm({
       </section>
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-        <h2 className="mb-4 text-base font-semibold text-slate-900">Parent / Guardian Details</h2>
+        <h2 className="mb-1 text-base font-semibold text-slate-900">Parent / Guardian Details</h2>
+        <p className="mb-4 text-xs text-slate-400">Optional — required only if you want contact details on invoices.</p>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <Label htmlFor="parent_name">Parent / Guardian Name *</Label>
+            <Label htmlFor="parent_name">Parent / Guardian Name</Label>
             <Input id="parent_name" placeholder="Full name" {...register("parent_name")} />
             <FieldError message={errors.parent_name?.message} />
           </div>
           <div>
-            <Label htmlFor="parent_phone">Mobile Number *</Label>
+            <Label htmlFor="parent_phone">Mobile Number</Label>
             <Input
               id="parent_phone"
               type="tel"
