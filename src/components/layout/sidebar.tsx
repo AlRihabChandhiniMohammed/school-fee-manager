@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   LayoutDashboard,
   Users,
@@ -16,7 +18,6 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useEffect } from "react";
 
 const NAV_ITEMS = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
@@ -33,7 +34,7 @@ const NAV_ITEMS = [
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   return (
-    <nav className="flex-1 space-y-1 px-3 py-4">
+    <nav className="min-h-0 flex-1 space-y-1.5 overflow-y-auto px-3 py-4">
       {NAV_ITEMS.map((item) => {
         const active = item.exact
           ? pathname === item.href
@@ -99,31 +100,54 @@ export function MobileSidebar({
   open: boolean;
   onClose: () => void;
 }) {
+  const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
-    if (open) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "";
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    const original = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = original;
     };
   }, [open]);
 
-  return (
-    <div className={cn("fixed inset-0 z-50 lg:hidden", !open && "pointer-events-none")}>
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [open, onClose]);
+
+  if (!mounted) return null;
+
+  return createPortal(
+    <div
+      className={cn("fixed inset-0 z-50 lg:hidden", !open && "pointer-events-none")}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Navigation menu"
+    >
       <div
         className={cn(
-          "absolute inset-0 bg-slate-900/50 transition-opacity",
-          open ? "opacity-100" : "opacity-0"
+          "absolute inset-0 bg-slate-900/60 transition-opacity",
+          open ? "opacity-100" : "invisible opacity-0"
         )}
         onClick={onClose}
         aria-hidden
       />
       <aside
         className={cn(
-          "absolute left-0 top-0 flex h-full w-72 max-w-[85vw] flex-col bg-white shadow-2xl transition-transform",
-          open ? "translate-x-0" : "-translate-x-full"
+          "absolute left-0 top-0 flex h-full w-[272px] max-w-[85vw] flex-col bg-white shadow-2xl transition-transform",
+          open ? "visible translate-x-0" : "invisible -translate-x-full"
         )}
       >
-        <div className="flex items-center justify-between pr-3">
+        <div className="flex flex-none items-center justify-between pr-3">
           <div className="flex-1">
             <Logo onNavigate={onClose} />
           </div>
@@ -136,7 +160,13 @@ export function MobileSidebar({
           </button>
         </div>
         <NavLinks onNavigate={onClose} />
+        <div className="flex-none border-t border-slate-100 px-5 py-4">
+          <p className="text-[11px] leading-4 text-slate-400">
+            Keep all fee records safe and simple.
+          </p>
+        </div>
       </aside>
-    </div>
+    </div>,
+    document.body
   );
 }
