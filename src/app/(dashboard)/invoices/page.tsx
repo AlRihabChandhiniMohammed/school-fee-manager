@@ -21,7 +21,6 @@ export default async function InvoicesPage({
     q?: string;
     from?: string;
     to?: string;
-    class?: string;
     year?: string;
     status?: string;
     method?: string;
@@ -36,7 +35,7 @@ export default async function InvoicesPage({
   let query = supabase
     .from("invoices")
     .select(
-      "id, invoice_number, invoice_date, academic_year, total_amount, amount_paid, balance, status, payment_method, student:students(id, student_id, student_name, parent_name, parent_phone, class, section)"
+      "id, invoice_number, invoice_date, academic_year, total_amount, amount_paid, balance, status, payment_method, student:students(id, student_name, parent_name, parent_phone)"
     )
     .order("created_at", { ascending: false })
     .limit(100);
@@ -50,7 +49,6 @@ export default async function InvoicesPage({
   }
   if (sp.from) query = query.gte("invoice_date", sp.from);
   if (sp.to) query = query.lte("invoice_date", sp.to);
-  if (sp.class) query = query.eq("student.class", sp.class);
   if (sp.year) query = query.eq("academic_year", sp.year);
   if (sp.status) query = query.eq("status", sp.status);
   if (sp.method) query = query.eq("payment_method", sp.method);
@@ -79,7 +77,7 @@ export default async function InvoicesPage({
           icon={<FileText className="h-7 w-7" />}
           title="No invoices found"
           description={
-            term || sp.from || sp.to || sp.class || sp.year || sp.status || sp.method
+            term || sp.from || sp.to || sp.year || sp.status || sp.method
               ? "Try adjusting your search or filters."
               : "Generate your first invoice to get started."
           }
@@ -92,7 +90,6 @@ export default async function InvoicesPage({
                 <TH>Invoice No</TH>
                 <TH>Date</TH>
                 <TH>Student</TH>
-                <TH>Class</TH>
                 <TH className="text-right">Amount</TH>
                 <TH className="text-right">Paid</TH>
                 <TH className="text-right">Balance</TH>
@@ -112,10 +109,6 @@ export default async function InvoicesPage({
                   <TD>
                     <p className="font-medium text-slate-900">{inv.student?.student_name}</p>
                     <p className="text-xs text-slate-400">{inv.student?.parent_name}</p>
-                  </TD>
-                  <TD>
-                    Class {inv.student?.class}
-                    {inv.student?.section ? `-${inv.student.section}` : ""}
                   </TD>
                   <TD className="text-right font-medium">{formatCurrency(Number(inv.total_amount), currency)}</TD>
                   <TD className="text-right text-emerald-600">{formatCurrency(Number(inv.amount_paid), currency)}</TD>

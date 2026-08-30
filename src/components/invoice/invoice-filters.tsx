@@ -4,7 +4,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Search, X } from "lucide-react";
 import { Input, Select } from "@/components/ui/field";
-import { CLASSES, ACADEMIC_YEARS, PAYMENT_METHODS, PAYMENT_STATUSES } from "@/lib/constants";
+import { ACADEMIC_YEARS, PAYMENT_METHODS, PAYMENT_STATUSES } from "@/lib/constants";
 import { statusLabel } from "@/lib/utils";
 
 function useQueryUpdater() {
@@ -30,7 +30,6 @@ export function InvoiceFilters() {
   const [term, setTerm] = useState(searchParams.get("q") ?? "");
   const [from, setFrom] = useState(searchParams.get("from") ?? "");
   const [to, setTo] = useState(searchParams.get("to") ?? "");
-  const [classFilter, setClassFilter] = useState(searchParams.get("class") ?? "");
   const [yearFilter, setYearFilter] = useState(searchParams.get("year") ?? "");
   const [statusFilter, setStatusFilter] = useState(searchParams.get("status") ?? "");
   const [methodFilter, setMethodFilter] = useState(searchParams.get("method") ?? "");
@@ -83,14 +82,6 @@ export function InvoiceFilters() {
             <Input type="date" value={to} onChange={(e) => { setTo(e.target.value); updateQuery({ to: e.target.value }); }} />
           </div>
         </div>
-        <Select value={classFilter} onChange={(e) => { setClassFilter(e.target.value); updateQuery({ class: e.target.value }); }}>
-          <option value="">All classes</option>
-          {CLASSES.map((c) => (
-            <option key={c} value={c}>
-              Class {c}
-            </option>
-          ))}
-        </Select>
         <Select value={yearFilter} onChange={(e) => { setYearFilter(e.target.value); updateQuery({ year: e.target.value }); }}>
           <option value="">All academic years</option>
           {ACADEMIC_YEARS.map((y) => (
@@ -118,13 +109,13 @@ export function InvoiceFilters() {
       </div>
       <div className="mt-3 flex items-center justify-between text-xs text-slate-400">
         <span>Filters update automatically as you search.</span>
-        {(searchParams.get("q") || searchParams.get("from") || searchParams.get("to") || searchParams.get("class") || searchParams.get("year") || searchParams.get("status") || searchParams.get("method")) && (
+        {(searchParams.get("q") || searchParams.get("from") || searchParams.get("to") || searchParams.get("year") || searchParams.get("status") || searchParams.get("method")) && (
           <button
             type="button"
             className="font-medium text-indigo-600 hover:text-indigo-700"
             onClick={() => {
-              setTerm(""); setFrom(""); setTo(""); setClassFilter(""); setYearFilter(""); setStatusFilter(""); setMethodFilter("");
-              updateQuery({ q: "", from: "", to: "", class: "", year: "", status: "", method: "" });
+              setTerm(""); setFrom(""); setTo(""); setYearFilter(""); setStatusFilter(""); setMethodFilter("");
+              updateQuery({ q: "", from: "", to: "", year: "", status: "", method: "" });
             }}
           >
             Clear all filters

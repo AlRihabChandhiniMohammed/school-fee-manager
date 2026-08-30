@@ -32,9 +32,6 @@ export function InvoiceQuickActions({
         academic_year: invoice.academic_year,
         student: {
           student_name: invoice.student.student_name,
-          student_id: invoice.student.student_id,
-          class: invoice.student.class,
-          section: invoice.student.section,
           parent_name: invoice.student.parent_name,
           parent_phone: invoice.student.parent_phone,
           parent_email: invoice.student.parent_email,

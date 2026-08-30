@@ -29,10 +29,10 @@ export default async function SearchPage({
     const { data: students } = await supabase
       .from("students")
       .select(
-        "id, student_id, student_name, parent_name, parent_phone, class, section, academic_year"
+        "id, student_name, parent_name, parent_phone, academic_year"
       )
       .or(
-        `parent_name.ilike.%${escaped}%,parent_phone.ilike.%${escaped}%,student_name.ilike.%${escaped}%,student_id.ilike.%${escaped}%`
+        `parent_name.ilike.%${escaped}%,parent_phone.ilike.%${escaped}%,student_name.ilike.%${escaped}%`
       )
       .order("student_name", { ascending: true })
       .limit(50);
@@ -76,7 +76,7 @@ export default async function SearchPage({
           <EmptyState
             icon={<SearchIcon className="h-7 w-7" />}
             title="Search to get started"
-            description="Enter a parent's name or mobile number, or a student name or ID."
+            description="Enter a parent's name or mobile number, or a student name."
           />
         ) : results === null ? (
           <EmptyState
@@ -98,7 +98,6 @@ export default async function SearchPage({
                   <TH>Parent</TH>
                   <TH>Phone</TH>
                   <TH>Student</TH>
-                  <TH>Class</TH>
                   <TH>Academic Year</TH>
                   <TH className="text-right">Total Paid</TH>
                   <TH className="text-right">Pending</TH>
@@ -114,11 +113,6 @@ export default async function SearchPage({
                     <TD>{r.parent_phone}</TD>
                     <TD>
                       <p className="font-medium text-slate-900">{r.student_name}</p>
-                      <p className="text-xs text-slate-400">{r.student_id}</p>
-                    </TD>
-                    <TD>
-                      Class {r.class}
-                      {r.section ? ` - ${r.section}` : ""}
                     </TD>
                     <TD>{r.academic_year}</TD>
                     <TD className="text-right font-medium text-emerald-600">

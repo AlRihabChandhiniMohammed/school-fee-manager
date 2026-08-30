@@ -2,7 +2,6 @@ import { z } from "zod";
 import { FEE_TYPES } from "@/lib/constants";
 
 export const studentSchema = z.object({
-  student_id: z.string().trim().min(1, "Student ID is required"),
   student_name: z.string().trim().min(1, "Student name is required"),
   parent_name: z.string().trim().min(1, "Parent/guardian name is required"),
   parent_phone: z
@@ -15,10 +14,7 @@ export const studentSchema = z.object({
     .optional()
     .default(""),
   address: z.string().trim().optional().default(""),
-  class: z.string().trim().min(1, "Class is required"),
-  section: z.string().trim().optional().default(""),
   academic_year: z.string().trim().min(1, "Academic year is required"),
-  dob: z.union([z.string(), z.literal("")]).optional().default(""),
   gender: z.union([z.string(), z.literal("")]).optional().default(""),
   course_ids: z.array(z.string()).optional().default([]),
 });

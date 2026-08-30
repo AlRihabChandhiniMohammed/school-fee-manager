@@ -11,11 +11,9 @@ import { useToast } from "@/components/ui/toast";
 export function StudentRowActions({
   id,
   studentName,
-  studentId,
 }: {
   id: string;
   studentName: string;
-  studentId: string;
 }) {
   const router = useRouter();
   const { toast } = useToast();
@@ -67,7 +65,7 @@ export function StudentRowActions({
         confirmLabel="Delete student"
         message={
           <>
-            Delete <span className="font-semibold">{studentName}</span> (ID: {studentId})?
+            Delete <span className="font-semibold">{studentName}</span>?
             <br />
             <span className="text-rose-600">
               All invoices and payment records for this student will also be permanently deleted.

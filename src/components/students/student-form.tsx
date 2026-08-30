@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { FieldError } from "@/components/ui/field-error";
 import { useToast } from "@/components/ui/toast";
 import { CourseMultiSelect } from "@/components/courses/course-multi-select";
-import { CLASSES, ACADEMIC_YEARS, GENDERS } from "@/lib/constants";
+import { ACADEMIC_YEARS, GENDERS } from "@/lib/constants";
 import type { Course } from "@/lib/types";
 
 export function StudentForm({
@@ -39,16 +39,12 @@ export function StudentForm({
     resolver: zodResolver(studentSchema),
     mode: "onBlur",
     defaultValues: initialValues ?? {
-      student_id: "",
       student_name: "",
       parent_name: "",
       parent_phone: "",
       parent_email: "",
       address: "",
-      class: "",
-      section: "",
       academic_year: "2026-2027",
-      dob: "",
       gender: "",
       course_ids: [],
     },
@@ -85,35 +81,10 @@ export function StudentForm({
       <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
         <h2 className="mb-4 text-base font-semibold text-slate-900">Student Details</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <div>
-            <Label htmlFor="student_id">Student ID *</Label>
-            <Input id="student_id" placeholder="e.g. STU-2026-001" {...register("student_id")} />
-            <FieldError message={errors.student_id?.message} />
-          </div>
           <div className="lg:col-span-2">
             <Label htmlFor="student_name">Student Name *</Label>
             <Input id="student_name" placeholder="Full name" {...register("student_name")} />
             <FieldError message={errors.student_name?.message} />
-          </div>
-          <div>
-            <Label htmlFor="class">Class *</Label>
-            <Input
-              id="class"
-              list="classes-list"
-              placeholder="e.g. 8"
-              {...register("class")}
-            />
-            <datalist id="classes-list">
-              {CLASSES.map((c) => (
-                <option key={c} value={c} />
-              ))}
-            </datalist>
-            <FieldError message={errors.class?.message} />
-          </div>
-          <div>
-            <Label htmlFor="section">Grade / Section</Label>
-            <Input id="section" placeholder="e.g. A" {...register("section")} />
-            <FieldError message={errors.section?.message} />
           </div>
           <div>
             <Label htmlFor="academic_year">Academic Year *</Label>
@@ -129,11 +100,6 @@ export function StudentForm({
               ))}
             </datalist>
             <FieldError message={errors.academic_year?.message} />
-          </div>
-          <div>
-            <Label htmlFor="dob">Date of Birth</Label>
-            <Input id="dob" type="date" {...register("dob")} />
-            <FieldError message={errors.dob?.message} />
           </div>
           <div>
             <Label htmlFor="gender">Gender</Label>

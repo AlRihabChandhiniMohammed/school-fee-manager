@@ -68,7 +68,7 @@ export default async function DashboardPage() {
   const { data: recent, error: recentError } = await supabase
     .from("invoices")
     .select(
-      "id, invoice_number, invoice_date, amount_paid, balance, status, student:students(id, student_id, student_name, parent_name, parent_phone, class, section)"
+      "id, invoice_number, invoice_date, amount_paid, balance, status, student:students(id, student_name, parent_name, parent_phone)"
     )
     .order("created_at", { ascending: false })
     .limit(10)
@@ -146,7 +146,6 @@ export default async function DashboardPage() {
                   <TH>Invoice No</TH>
                   <TH>Student</TH>
                   <TH>Parent</TH>
-                  <TH>Class</TH>
                   <TH>Amount</TH>
                   <TH>Payment Date</TH>
                   <TH>Status</TH>
@@ -159,13 +158,8 @@ export default async function DashboardPage() {
                     <TD className="font-semibold text-indigo-600">{inv.invoice_number}</TD>
                     <TD>
                       <p className="font-medium text-slate-900">{inv.student?.student_name}</p>
-                      <p className="text-xs text-slate-400">{inv.student?.student_id}</p>
                     </TD>
                     <TD>{inv.student?.parent_name}</TD>
-                    <TD>
-                      Class {inv.student?.class}
-                      {inv.student?.section ? `-${inv.student.section}` : ""}
-                    </TD>
                     <TD className="font-medium">{formatCurrency(Number(inv.amount_paid), currency)}</TD>
                     <TD>{formatDate(inv.invoice_date)}</TD>
                     <TD>

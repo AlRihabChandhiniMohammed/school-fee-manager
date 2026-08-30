@@ -19,9 +19,6 @@ export interface InvoiceDocumentData {
   };
   student: {
     student_name: string;
-    student_id: string;
-    class: string;
-    section: string;
     parent_name: string;
     parent_phone: string;
     parent_email: string | null;
@@ -127,11 +124,6 @@ export function InvoiceDocument({
         <div className="sm:text-right">
           <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Student</p>
           <p className="text-sm font-semibold text-slate-900">{student.student_name}</p>
-          <p className="mt-0.5 text-sm text-slate-600">Student ID: {student.student_id}</p>
-          <p className="text-sm text-slate-600">
-            Class: {student.class}
-            {student.section ? ` - ${student.section}` : ""}
-          </p>
         </div>
       </div>
 

@@ -45,29 +45,15 @@ export async function createStudentAction(
     const parsed = studentSchema.parse(input);
     const supabase = await getSupabase();
 
-    const { data: existing } = await supabase
-      .from("students")
-      .select("id")
-      .eq("student_id", parsed.student_id)
-      .maybeSingle();
-
-    if (existing) {
-      return { success: false, error: `Student ID "${parsed.student_id}" is already in use.` };
-    }
-
     const { data, error } = await supabase
       .from("students")
       .insert({
-        student_id: parsed.student_id,
         student_name: parsed.student_name,
         parent_name: parsed.parent_name,
         parent_phone: parsed.parent_phone,
         parent_email: parsed.parent_email || null,
         address: parsed.address || null,
-        class: parsed.class,
-        section: parsed.section,
         academic_year: parsed.academic_year,
-        dob: parsed.dob || null,
         gender: parsed.gender || null,
       })
       .select("id")
@@ -98,30 +84,15 @@ export async function updateStudentAction(
     const parsed = studentSchema.parse(input);
     const supabase = await getSupabase();
 
-    const { data: existing } = await supabase
-      .from("students")
-      .select("id")
-      .neq("id", id)
-      .eq("student_id", parsed.student_id)
-      .maybeSingle();
-
-    if (existing) {
-      return { success: false, error: `Student ID "${parsed.student_id}" is already in use.` };
-    }
-
     const { error } = await supabase
       .from("students")
       .update({
-        student_id: parsed.student_id,
         student_name: parsed.student_name,
         parent_name: parsed.parent_name,
         parent_phone: parsed.parent_phone,
         parent_email: parsed.parent_email || null,
         address: parsed.address || null,
-        class: parsed.class,
-        section: parsed.section,
         academic_year: parsed.academic_year,
-        dob: parsed.dob || null,
         gender: parsed.gender || null,
       })
       .eq("id", id);

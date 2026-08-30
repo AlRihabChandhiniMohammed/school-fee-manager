@@ -16,7 +16,7 @@ export const metadata = { title: "Fees" };
 export default async function FeesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; status?: string; class?: string; year?: string }>;
+  searchParams: Promise<{ q?: string; status?: string; year?: string }>;
 }) {
   const sp = await searchParams;
   const supabase = await createClient();
@@ -26,7 +26,7 @@ export default async function FeesPage({
   let query = supabase
     .from("invoice_items")
     .select(
-      "id, fee_type, description, amount, invoice:invoices(id, invoice_number, invoice_date, academic_year, total_amount, amount_paid, balance, status, student:students(id, student_name, parent_name, class, section))"
+      "id, fee_type, description, amount, invoice:invoices(id, invoice_number, invoice_date, academic_year, total_amount, amount_paid, balance, status, student:students(id, student_name, parent_name))"
     )
     .order("invoice_id", { ascending: false })
     .limit(200);
@@ -39,7 +39,6 @@ export default async function FeesPage({
     );
   }
   if (sp.status) query = query.eq("invoice.status", sp.status);
-  if (sp.class) query = query.eq("invoice.student.class", sp.class);
   if (sp.year) query = query.eq("invoice.academic_year", sp.year);
 
   const { data: fees, error } = await query.returns<FeeLedgerRow[]>();
@@ -96,10 +95,6 @@ export default async function FeesPage({
                     <Link href={`/students/${f.invoice?.student?.id}`} className="font-medium text-slate-900 hover:text-indigo-600">
                       {f.invoice?.student?.student_name}
                     </Link>
-                    <p className="text-xs text-slate-400">
-                      Class {f.invoice?.student?.class}
-                      {f.invoice?.student?.section ? `-${f.invoice?.student.section}` : ""}
-                    </p>
                   </TD>
                   <TD>
                     <Link href={`/invoices/${f.invoice?.id}`} className="font-semibold text-indigo-600 hover:text-indigo-700">

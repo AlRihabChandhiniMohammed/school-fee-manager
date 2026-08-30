@@ -22,24 +22,6 @@ export const PAYMENT_STATUSES = ["paid", "partial", "pending"] as const;
 
 export const GENDERS = ["Male", "Female", "Other"] as const;
 
-export const CLASSES = [
-  "Nursery",
-  "LKG",
-  "UKG",
-  "1",
-  "2",
-  "3",
-  "4",
-  "5",
-  "6",
-  "7",
-  "8",
-  "9",
-  "10",
-  "11",
-  "12",
-] as const;
-
 export const CURRENCIES = [
   { code: "INR", label: "Indian Rupee", symbol: "₹" },
   { code: "USD", label: "US Dollar", symbol: "$" },

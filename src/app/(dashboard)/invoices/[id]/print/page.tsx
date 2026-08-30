@@ -19,7 +19,7 @@ export default async function InvoicePrintPage({
   const { data } = await supabase
     .from("invoices")
     .select(
-      "*, student:students(id, student_id, student_name, parent_name, parent_phone, parent_email, class, section, academic_year, address), items:invoice_items(fee_type, description, amount, course_id, courses(name))"
+      "*, student:students(id, student_name, parent_name, parent_phone, parent_email, academic_year, address), items:invoice_items(fee_type, description, amount, course_id, courses(name))"
     )
     .eq("id", id)
     .maybeSingle();
@@ -61,9 +61,6 @@ export default async function InvoicePrintPage({
         }}
         student={{
           student_name: invoice.student?.student_name ?? "",
-          student_id: invoice.student?.student_id ?? "",
-          class: invoice.student?.class ?? "",
-          section: invoice.student?.section ?? "",
           parent_name: invoice.student?.parent_name ?? "",
           parent_phone: invoice.student?.parent_phone ?? "",
           parent_email: invoice.student?.parent_email ?? null,

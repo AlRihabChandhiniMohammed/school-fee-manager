@@ -15,7 +15,7 @@ export const metadata = { title: "Reports" };
 export default async function ReportsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ from?: string; to?: string; class?: string; year?: string; method?: string }>;
+  searchParams: Promise<{ from?: string; to?: string; year?: string; method?: string }>;
 }) {
   const sp = await searchParams;
   const supabase = await createClient();
@@ -25,12 +25,11 @@ export default async function ReportsPage({
   let query = supabase
     .from("invoices")
     .select(
-      "id, invoice_number, invoice_date, academic_year, subtotal, discount, total_amount, amount_paid, balance, status, payment_method, student:students(student_id, student_name, parent_name, parent_phone, class, section)"
+      "id, invoice_number, invoice_date, academic_year, subtotal, discount, total_amount, amount_paid, balance, status, payment_method, student:students(student_name, parent_name, parent_phone)"
     );
 
   if (sp.from) query = query.gte("invoice_date", sp.from);
   if (sp.to) query = query.lte("invoice_date", sp.to);
-  if (sp.class) query = query.eq("student.class", sp.class);
   if (sp.year) query = query.eq("academic_year", sp.year);
   if (sp.method) query = query.eq("payment_method", sp.method);
 
@@ -41,12 +40,9 @@ export default async function ReportsPage({
   const rows: ReportRow[] = (data ?? []).map((inv) => ({
     invoice_number: inv.invoice_number,
     invoice_id: inv.id,
-    student_id: inv.student?.student_id ?? "",
     student_name: inv.student?.student_name ?? "",
     parent_name: inv.student?.parent_name ?? "",
     parent_phone: inv.student?.parent_phone ?? "",
-    class: inv.student?.class ?? "",
-    section: inv.student?.section ?? "",
     academic_year: inv.academic_year,
     invoice_date: inv.invoice_date,
     payment_method: inv.payment_method,
@@ -96,7 +92,7 @@ export default async function ReportsPage({
   ].filter((s) => s.value > 0);
 
   const active =
-    Boolean(sp.from) || Boolean(sp.to) || Boolean(sp.class) || Boolean(sp.year) || Boolean(sp.method);
+    Boolean(sp.from) || Boolean(sp.to) || Boolean(sp.year) || Boolean(sp.method);
 
   return (
     <div>

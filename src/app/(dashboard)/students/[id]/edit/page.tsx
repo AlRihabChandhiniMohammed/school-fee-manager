@@ -46,16 +46,12 @@ export default async function EditStudentPage({
         studentId={id}
         courses={(courses ?? []) as Course[]}
         initialValues={{
-          student_id: student.student_id,
           student_name: student.student_name,
           parent_name: student.parent_name,
           parent_phone: student.parent_phone,
           parent_email: student.parent_email ?? "",
           address: student.address ?? "",
-          class: student.class,
-          section: student.section,
           academic_year: student.academic_year,
-          dob: student.dob ?? "",
           gender: student.gender ?? "",
           course_ids: initialCourseIds,
         }}

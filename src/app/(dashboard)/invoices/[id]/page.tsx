@@ -23,7 +23,7 @@ export default async function InvoiceDetailPage({
   const { data } = await supabase
     .from("invoices")
     .select(
-      "*, student:students(id, student_id, student_name, parent_name, parent_phone, parent_email, class, section, academic_year, address), items:invoice_items(id, fee_type, description, amount, course_id, courses(name)), payments(id, amount, payment_method, transaction_reference, payment_date, notes)"
+      "*, student:students(id, student_name, parent_name, parent_phone, parent_email, academic_year, address), items:invoice_items(id, fee_type, description, amount, course_id, courses(name)), payments(id, amount, payment_method, transaction_reference, payment_date, notes)"
     )
     .eq("id", id)
     .maybeSingle();
@@ -40,9 +40,6 @@ export default async function InvoiceDetailPage({
     academic_year: invoice.academic_year,
     student: {
       student_name: invoice.student?.student_name ?? "",
-      student_id: invoice.student?.student_id ?? "",
-      class: invoice.student?.class ?? "",
-      section: invoice.student?.section ?? "",
       parent_name: invoice.student?.parent_name ?? "",
       parent_phone: invoice.student?.parent_phone ?? "",
       parent_email: invoice.student?.parent_email ?? null,
@@ -138,10 +135,6 @@ export default async function InvoiceDetailPage({
               Student
             </h2>
             <p className="text-sm font-semibold text-slate-900">{invoice.student?.student_name}</p>
-            <p className="text-xs text-slate-500">
-              {invoice.student?.student_id} • Class {invoice.student?.class}
-              {invoice.student?.section ? ` - ${invoice.student.section}` : ""}
-            </p>
             <Link
               href={`/students/${invoice.student?.id}`}
               className="mt-3 inline-block text-sm font-medium text-indigo-600 hover:text-indigo-700"

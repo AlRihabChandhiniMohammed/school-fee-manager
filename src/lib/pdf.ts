@@ -12,9 +12,6 @@ export interface PdfInvoiceData {
   academic_year: string;
   student: {
     student_name: string;
-    student_id: string;
-    class: string;
-    section: string;
     parent_name: string;
     parent_phone: string;
     parent_email?: string | null;
@@ -133,11 +130,6 @@ export async function downloadInvoicePdf(
   doc.setFont("helvetica", "bold");
   doc.setTextColor(30, 41, 59);
   doc.text(data.student.student_name, pageWidth / 2, y + 6);
-  doc.setFont("helvetica", "normal");
-  doc.setTextColor(71, 85, 105);
-  doc.text(`Student ID: ${data.student.student_id}`, pageWidth / 2, y + 11);
-  const classText = `Class: ${data.student.class}${data.student.section ? ` - ${data.student.section}` : ""}`;
-  doc.text(classText, pageWidth / 2, y + 16);
 
   y += 24;
 

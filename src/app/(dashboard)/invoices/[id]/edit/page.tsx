@@ -28,7 +28,7 @@ export default async function EditInvoicePage({
     supabase
       .from("students")
       .select(
-        "id, student_id, student_name, parent_name, parent_phone, parent_email, address, class, section, academic_year"
+        "id, student_name, parent_name, parent_phone, parent_email, address, academic_year"
       )
       .order("student_name", { ascending: true }),
     supabase.from("invoices").select("student_id, balance").gt("balance", 0),

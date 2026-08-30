@@ -13,7 +13,7 @@ export const metadata = { title: "Students" };
 export default async function StudentsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; class?: string; year?: string }>;
+  searchParams: Promise<{ q?: string; year?: string }>;
 }) {
   const sp = await searchParams;
   const supabase = await createClient();
@@ -27,10 +27,9 @@ export default async function StudentsPage({
   if (term) {
     const escaped = term.replace(/'/g, "''");
     query = query.or(
-      `student_name.ilike.%${escaped}%,student_id.ilike.%${escaped}%,parent_name.ilike.%${escaped}%,parent_phone.ilike.%${escaped}%`
+      `student_name.ilike.%${escaped}%,parent_name.ilike.%${escaped}%,parent_phone.ilike.%${escaped}%`
     );
   }
-  if (sp.class) query = query.eq("class", sp.class);
   if (sp.year) query = query.eq("academic_year", sp.year);
 
   const { data: students, error } = await query;
@@ -60,12 +59,12 @@ export default async function StudentsPage({
           icon={<Users className="h-7 w-7" />}
           title="No students found"
           description={
-            term || sp.class || sp.year
+            term || sp.year
               ? "Try adjusting your search or filters."
               : "Add your first student to start recording fee invoices."
           }
           action={
-            !(term || sp.class || sp.year) ? (
+            !(term || sp.year) ? (
               <Link href="/students/new">
                 <Button>+ Add Student</Button>
               </Link>
@@ -78,8 +77,6 @@ export default async function StudentsPage({
             <THead>
               <TR>
                 <TH>Student</TH>
-                <TH>Student ID</TH>
-                <TH>Class</TH>
                 <TH>Academic Year</TH>
                 <TH>Parent</TH>
                 <TH>Phone</TH>
@@ -94,16 +91,11 @@ export default async function StudentsPage({
                       {s.student_name}
                     </Link>
                   </TD>
-                  <TD className="text-slate-500">{s.student_id}</TD>
-                  <TD>
-                    Class {s.class}
-                    {s.section ? ` - ${s.section}` : ""}
-                  </TD>
                   <TD>{s.academic_year}</TD>
                   <TD>{s.parent_name}</TD>
                   <TD>{s.parent_phone}</TD>
                   <TD className="text-right">
-                    <StudentRowActions id={s.id} studentName={s.student_name} studentId={s.student_id} />
+                    <StudentRowActions id={s.id} studentName={s.student_name} />
                   </TD>
                 </TR>
               ))}

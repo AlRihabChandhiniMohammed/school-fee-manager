@@ -68,7 +68,7 @@ export default async function StudentDetailPage({
     <div>
       <PageHeader
         title={student.student_name}
-        description={`Student ID: ${student.student_id} • Registered ${formatDate(student.created_at)}`}
+        description={`Registered ${formatDate(student.created_at)}`}
         actions={
           <>
             <Link href={`/invoices/new?student=${student.id}`}>
@@ -84,7 +84,6 @@ export default async function StudentDetailPage({
             <StudentDeleteButton
               id={id}
               studentName={student.student_name}
-              studentId={student.student_id}
             />
           </>
         }
@@ -101,10 +100,6 @@ export default async function StudentDetailPage({
           <div className="space-y-3 px-5 py-5 text-sm">
             <InfoRow icon={<User className="h-4 w-4" />} label="Student">
               <span className="font-medium text-slate-900">{student.student_name}</span>
-            </InfoRow>
-            <InfoRow icon={<GraduationCap className="h-4 w-4" />} label="Class">
-              Class {student.class}
-              {student.section ? ` - ${student.section}` : ""}
             </InfoRow>
             <InfoRow icon={<GraduationCap className="h-4 w-4" />} label="Academic Year">
               {student.academic_year}
@@ -126,11 +121,6 @@ export default async function StudentDetailPage({
             {student.gender && (
               <InfoRow icon={<User className="h-4 w-4" />} label="Gender">
                 {student.gender}
-              </InfoRow>
-            )}
-            {student.dob && (
-              <InfoRow icon={<User className="h-4 w-4" />} label="Date of Birth">
-                {formatDate(student.dob)}
               </InfoRow>
             )}
 

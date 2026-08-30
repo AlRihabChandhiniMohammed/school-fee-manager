@@ -11,16 +11,12 @@ create extension if not exists "pgcrypto";
 -- students
 create table if not exists public.students (
   id uuid primary key default gen_random_uuid(),
-  student_id text not null unique,
   student_name text not null,
   parent_name text not null,
   parent_phone text not null,
   parent_email text,
   address text,
-  class text not null,
-  section text not null default '',
   academic_year text not null,
-  dob date,
   gender text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -28,7 +24,6 @@ create table if not exists public.students (
 
 create index if not exists idx_students_name on public.students (student_name);
 create index if not exists idx_students_parent_phone on public.students (parent_phone);
-create index if not exists idx_students_class on public.students (class);
 create index if not exists idx_students_academic_year on public.students (academic_year);
 
 -- invoices

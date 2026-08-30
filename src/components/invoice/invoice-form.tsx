@@ -30,14 +30,11 @@ import { formatCurrency } from "@/lib/format";
 
 export interface StudentOption {
   id: string;
-  student_id: string;
   student_name: string;
   parent_name: string;
   parent_phone: string;
   parent_email: string | null;
   address: string | null;
-  class: string;
-  section: string;
   academic_year: string;
   outstanding: number;
 }
@@ -160,7 +157,6 @@ export function InvoiceForm({
     return students.filter(
       (s) =>
         s.student_name.toLowerCase().includes(q) ||
-        s.student_id.toLowerCase().includes(q) ||
         s.parent_name.toLowerCase().includes(q) ||
         s.parent_phone.includes(q)
     );
@@ -230,8 +226,7 @@ export function InvoiceForm({
                 <span>
                   <span className="font-medium text-slate-900">{selected.student_name}</span>
                   <span className="ml-2 text-xs text-slate-400">
-                    {selected.student_id} • Class {selected.class}
-                    {selected.section ? `-${selected.section}` : ""}
+                    {selected.academic_year}
                   </span>
                 </span>
               ) : (
@@ -272,10 +267,7 @@ export function InvoiceForm({
                       >
                         <div>
                           <p className="text-sm font-medium text-slate-900">{s.student_name}</p>
-                          <p className="text-xs text-slate-400">
-                            {s.student_id} • Class {s.class}
-                            {s.section ? `-${s.section}` : ""} • {s.academic_year}
-                          </p>
+                          <p className="text-xs text-slate-400">{s.academic_year}</p>
                           <p className="mt-1 text-xs text-slate-500">
                             {s.parent_name} • {s.parent_phone}
                           </p>
@@ -307,11 +299,7 @@ export function InvoiceForm({
               <div>
                 <p className="text-xs uppercase tracking-wide text-slate-400">Student Information</p>
                 <p className="mt-1 text-sm font-medium text-slate-900">{selected.student_name}</p>
-                <p className="text-xs text-slate-500">ID: {selected.student_id}</p>
-                <p className="text-xs text-slate-500">
-                  Class {selected.class}
-                  {selected.section ? ` - ${selected.section}` : ""} • {selected.academic_year}
-                </p>
+                <p className="text-xs text-slate-500">{selected.academic_year}</p>
               </div>
               {selected.outstanding > 0 && (
                 <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs font-medium text-amber-700 sm:col-span-2">
@@ -557,9 +545,6 @@ export function InvoiceForm({
               }}
               student={{
                 student_name: selected.student_name,
-                student_id: selected.student_id,
-                class: selected.class,
-                section: selected.section,
                 parent_name: selected.parent_name,
                 parent_phone: selected.parent_phone,
                 parent_email: selected.parent_email,

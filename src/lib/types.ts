@@ -1,15 +1,11 @@
 export interface Student {
   id: string;
-  student_id: string;
   student_name: string;
   parent_name: string;
   parent_phone: string;
   parent_email: string | null;
   address: string | null;
-  class: string;
-  section: string;
   academic_year: string;
-  dob: string | null;
   gender: string | null;
   created_at: string;
   updated_at: string;
@@ -68,13 +64,10 @@ export interface Payment {
 export interface InvoiceWithRelations extends Invoice {
   student: Pick<
     Student,
-    | "student_id"
     | "student_name"
     | "parent_name"
     | "parent_phone"
     | "parent_email"
-    | "class"
-    | "section"
     | "academic_year"
     | "address"
   >;
@@ -133,12 +126,9 @@ export interface NewInvoiceInput {
 export interface ReportRow {
   invoice_number: string;
   invoice_id: string;
-  student_id: string;
   student_name: string;
   parent_name: string;
   parent_phone: string;
-  class: string;
-  section: string;
   academic_year: string;
   invoice_date: string;
   payment_method: string | null;
@@ -152,14 +142,11 @@ export interface ReportRow {
 
 export interface InvoiceStudent {
   id: string;
-  student_id: string;
   student_name: string;
   parent_name: string;
   parent_phone: string;
   parent_email: string | null;
   address: string | null;
-  class: string;
-  section: string;
   academic_year: string;
 }
 
@@ -198,8 +185,6 @@ export interface FeeLedgerRow {
     student: {
       id: string;
       student_name: string;
-      class: string;
-      section: string;
     } | null;
   } | null;
 }
@@ -218,12 +203,9 @@ export interface ReportRowInput {
   payment_method: string | null;
   student:
     | {
-        student_id: string;
         student_name: string;
         parent_name: string;
         parent_phone: string;
-        class: string;
-        section: string;
       }
     | null;
 }
